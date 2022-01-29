@@ -11,6 +11,11 @@
         .add{
             background-color: gray;
         }
+        label{
+            height: 40px;
+            line-height: 40px;
+        }
+        
     </style>
 </head>
 <body>
@@ -23,10 +28,22 @@
             <li class="add"><a href="add.html">添加图书</a></li>
             <li><a href="update.html">修改图书信息</a></li>
             <li><a href="delete.html">删除图书</a></li>
+            <li><a href="library.html">返回首页</a></li>
         </ul>
     </div>
     <div class="table">
-        这是表格区
+        <label>编号</label>
+        <input type="text" id="number"><br>
+        <label>书名</label>
+        <input type="text" id="bookname"><br>
+        <label>描述</label>
+        <input type="text" id="description"><br>
+        <label>位置</label>
+        <input type="text" id="location"><br>
+        <label>所属组织</label>
+        <input type="text" id="organization"><br>
+        <button>添加</button>
+
     </div>
 </body>
 </html>

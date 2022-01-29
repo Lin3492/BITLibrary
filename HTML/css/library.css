@@ -1,14 +1,16 @@
 .big-title{
-    background-color: seagreen;
+    background-color: green;
     width: 100%;
     height: 80px;
     line-height: 80px;
 }
 
 .main-function{
+    background-color: rgb(194, 194, 194);
     float: left;
     width: 20%;
-    height: 400px;
+    height: 450px;
+    
 }
 
 .main-function ul li a{
@@ -23,8 +25,9 @@
 }
 
 .table{
-    background-color: slategray;
+    background-color: honeydew;
     float: right;
     width: 80%;
-    height: 400px;
+   
+   
 }

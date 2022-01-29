@@ -7,6 +7,11 @@
     <title>图书管理系统</title>
     <link rel="stylesheet" href="css/reset.css">
     <link rel="stylesheet" href="css/library.css">
+    <style>
+        td,th{
+            width: 150px;
+        }
+    </style>
 </head>
 <body>
     <div class="big-title">
@@ -18,10 +23,47 @@
             <li><a href="add.html">添加图书</a></li>
             <li><a href="update.html">修改图书信息</a></li>
             <li><a href="delete.html">删除图书</a></li>
+            <li><a href="library.html">返回首页</a></li>
         </ul>
     </div>
     <div class="table">
-        这是表格区
+        <h4>现有图书</h4>
+        <div id="books_avaliable">
+            <table border="1">
+                <tr>
+                    <th>编号</th>
+                    <th>书名</th>
+                    <th>类别</th>
+                    <th>总数</th>
+                    <th>库存数</th>
+                    <th>所属组织</th>
+                </tr>
+                <tr v-for="info in bookinfo">
+                    <td>{{info.number}}</td>
+                    <td>{{info.name}}</td>
+                    <td>{{info.booktype}}</td>
+                    <td>{{info.total}}</td>
+                    <td>{{info.storage}}</td>
+                    <td>{{info.org}}</td>
+                </tr>
+            </table>
+        </div>
     </div>
 </body>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<script>
+    var library=new Vue({
+        el:'#books_avaliable',
+        data:{
+            bookinfo:[
+                    {"number":"1","name":"Java","total":"3","storage":"2","booktype":"computer","org":"北京书院"},
+                    {"number":"2","name":"Python","total":"2","storage":"1","booktype":"computer","org":"北京书院"},
+                    {"number":"3","name":"C","total":"6","storage":"4","booktype":"computer","org":"北京书院"},
+                    {"number":"4","name":"PHP","total":"5","storage":"3","booktype":"computer","org":"北京书院"},
+            ]
+        }
+    })
+</script>
+
 </html>
