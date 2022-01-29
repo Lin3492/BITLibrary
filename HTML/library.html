@@ -39,12 +39,12 @@
                     <th>所属组织</th>
                 </tr>
                 <tr v-for="info in bookinfo">
-                    <td>{{info.number}}</td>
+                    <td>{{info.id}}</td>
                     <td>{{info.name}}</td>
-                    <td>{{info.booktype}}</td>
-                    <td>{{info.total}}</td>
-                    <td>{{info.storage}}</td>
-                    <td>{{info.org}}</td>
+                    <td>{{info.category}}</td>
+                    <td>{{info.number}}</td>
+                    <td>{{info.stockNum}}</td>
+                    <td>{{info.organization}}</td>
                 </tr>
             </table>
         </div>
@@ -52,17 +52,32 @@
 </body>
 
 <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+
 <script>
+    var baseURL="https://ea3c05aa-ec5b-41d8-9a64-64ff20721e84.mock.pstmn.io";
     var library=new Vue({
         el:'#books_avaliable',
         data:{
-            bookinfo:[
-                    {"number":"1","name":"Java","total":"3","storage":"2","booktype":"computer","org":"北京书院"},
-                    {"number":"2","name":"Python","total":"2","storage":"1","booktype":"computer","org":"北京书院"},
-                    {"number":"3","name":"C","total":"6","storage":"4","booktype":"computer","org":"北京书院"},
-                    {"number":"4","name":"PHP","total":"5","storage":"3","booktype":"computer","org":"北京书院"},
-            ]
-        }
+            bookinfo:[],
+        },
+        mounted:function(){
+            this.getBookinfo();
+        },
+        methods:{
+            getBookinfo:function(){
+            var bi=this;
+            axios.get(baseURL+"/book/").then(function(response){
+                if(response.data.code=="200"){
+                    bi.bookinfo=response.data.data.records;
+                }
+                
+            },
+            function(err){})
+        },
+        },
+        
     })
 </script>
 

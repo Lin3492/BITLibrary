@@ -45,7 +45,9 @@
             <input type="text" v-model="book_name">
             <label>编号</label>
             <input type="text" v-model="book_id">
-            <button value="搜索结果" v-on:click="search_result()">查询</button>
+            <label>类别</label>
+            <input type="text" v-model="book_category">
+            <button value="搜索结果" v-on:click="search_result">查询</button>
         </div>
         <div>
             <table border="1">
@@ -56,14 +58,16 @@
                     <th>总数</th>
                     <th>库存数</th>
                     <th>所属组织</th>
+                    <th>位置</th>
                 </tr>
                 <tr v-for="info in bookinfos">
-                    <td>{{info.number}}</td>
+                    <td>{{info.id}}</td>
                     <td>{{info.name}}</td>
-                    <td>{{info.booktype}}</td>
-                    <td>{{info.total}}</td>
-                    <td>{{info.storage}}</td>
-                    <td>{{info.org}}</td>
+                    <td>{{info.category}}</td>
+                    <td>{{info.number}}</td>
+                    <td>{{info.stockNum}}</td>
+                    <td>{{info.organization}}</td>
+                    <td>{{info.location}}</td>
                 </tr>
             </table>
         </div>
@@ -71,32 +75,44 @@
 
 
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
     <script>
+        var baseURL="https://ea3c05aa-ec5b-41d8-9a64-64ff20721e84.mock.pstmn.io";
         var searchbooks = new Vue({
             el:'#searchbooks',
             data:{
                 book_name:'',
                 book_id:'',
+                book_category:'',
                 bookinfos:[],
-                bookinfo:[
-                    {"number":"1","name":"Java","total":"3","storage":"2","booktype":"computer","org":"北京书院"},
-                    {"number":"2","name":"Python","total":"2","storage":"1","booktype":"computer","org":"北京书院"},
-                    {"number":"3","name":"C","total":"6","storage":"4","booktype":"computer","org":"北京书院"},
-                    {"number":"4","name":"PHP","total":"5","storage":"3","booktype":"computer","org":"北京书院"},
-                ]
-            },          
+                bookinfo:[]
+            },
+            mounted:function(){
+                this.getBookinfo();
+            },        
             methods:{
+                getBookinfo:function(){
+                    var bi=this;
+                    axios.get(baseURL+"/book/").then(function(response){
+                        if(response.data.code=="200"){
+                            bi.bookinfo=response.data.data.records;
+                        }
+                        
+                    },
+                    function(err){
+                        
+                    })
+                },
                 search_result:function(){
                     var flag=false;
                     this.bookinfos=[];
-                    if(this.book_id==''&&this.book_name==''){
+                    if(this.book_id==''&&this.book_name==''&&this.book_category==''){
                         this.bookinfos=this.bookinfo;
                     }
                     else{
                         for (let i= 0; i< this.bookinfo.length;i++) {
-                            if (this.book_name==this.bookinfo[i].name||this.book_id==this.bookinfo[i].number) {
+                            if (this.book_name==this.bookinfo[i].name||this.book_id==this.bookinfo[i].id||this.book_category==this.bookinfo[i].category) {
                                 this.bookinfos.push(this.bookinfo[i]);
                                 flag=true;
                             }
@@ -107,8 +123,9 @@
                     }                   
                     this.book_name='';
                     this.book_id='';
-                    
-                }
+                    this.book_category='';
+                },
+                
             },
         })
     </script>
