@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>图书管理系统</title>
+</head>
+
+<body>
+	<div id="app">
+		
+    <el-container>
+      <el-header style="text-align: right; font-size: 12px;height: 40px;line-height: 40px;background-color: rgb(208, 214, 214);">
+        <el-dropdown>
+          <i class="el-icon-s-custom" style="margin-right: 15px ;"></i>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item>登录</el-dropdown-item>
+            <el-dropdown-item>登出</el-dropdown-item>
+            <el-dropdown-item>注册</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+        <!-- <span></span> -->
+      </el-header>
+    </el-container>
+   
+    <h1 style="text-align:center">图书管理系统</h1>
+
+    <el-container>
+      <el-aside width="120px">
+        <el-menu>
+          <el-menu-item><el-link href="library-2.html">图书列表</el-link></el-menu-item>
+          <el-menu-item><el-link herf="#">图书分类管理</el-link></el-menu-item>
+          <el-menu-item><el-link herf="#">组织管理</el-link></el-menu-item>
+        </el-menu>
+      </el-aside>
+      <el-main>
+        <!-- 顶部按钮区 -->
+        <!-- <el-row>
+          <el-button type="primary" @click="getAll">获取图书列表</el-button>
+          <el-button type="primary" @click="addBook">添加图书</el-button>
+        </el-row> -->
+
+        <div>
+          <label>名称</label>
+          <input type="text" v-model="name">
+          <label>描述</label>
+          <input type="text" v-model="description">
+          <label>位置</label>
+          <input type="text" v-model="location">
+          <label>分类</label>
+          <input type="text" v-model="category">
+          <label>组织</label>
+          <input type="text" v-model="organization">
+          <button @click="searchBooks">查询</button>
+        </div>
+
+        <el-table :data="bookList">
+          <el-table-column prop="id" label="序号"></el-table-column>
+          <el-table-column prop="category" label="图书类别"></el-table-column>
+          <el-table-column prop="name" label="图书名称"></el-table-column>
+          <el-table-column prop="organization" label="组织"></el-table-column>
+          <el-table-column prop="location" label="位置"></el-table-column>
+          <el-table-column prop="description" label="描述"></el-table-column>
+          <el-table-column prop="number" label="总数"></el-table-column>
+          <el-table-column prop="stockNum" label="库存"></el-table-column>
+          <el-table-column label="操作">
+            <template slot-scope="scope">
+              <el-button type="danger" size="mini" @click="deleteBook(scope.row)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-main>
+    </el-container>
+	
+		<!-- 添加图书弹窗 -->
+		<el-dialog title="添加图书" :visible.sync="addBookDialogVisible" width="50%">
+			<el-form :model="addForm" label-width="100px">
+				<el-form-item label="分类ID">
+					<el-input type="text" v-model="addForm.categoryId"></el-input>
+				</el-form-item>
+				<el-form-item label="名称">
+					<el-input type="text" v-model="addForm.name"></el-input>
+				</el-form-item>
+			</el-form>
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="cancle()">取 消</el-button>
+				<el-button type="primary" @click="confirmAddBook()">确 定</el-button>
+			</span>
+		</el-dialog>
+
+	</div>
+</body>
+<!-- 开发环境版本，包含了有帮助的命令行警告 -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<!-- 引入样式 -->
+<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<!-- axios -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+	var baseURL = "https://053768c9-eeee-4908-8ade-439d76cac3e6.mock.pstmn.io";
+	new Vue({
+		el: '#app',
+		data: {
+			bookList: [],
+			addBookDialogVisible: false,
+			addForm: {},
+      name:'',
+      description:'',
+      location:'',
+      category:'',
+      organization:''
+		},
+		created() {
+			this.getAll()
+		},
+		methods: {
+			getAll() {
+				axios.get(baseURL + "/book").then(res => {
+					if (res.data.code == 200) {
+						console.log(res.data)
+						this.bookList = res.data.data.records
+					}
+				})
+			},
+      searchBooks(){
+        axios.get(baseURL+"/book?category="+this.category+"&name="+this.name+"&description="+this.description+"&location="+this.location+"&organization="+this.organization).then(res=>{
+          if(res.data.code==200){
+            console.log(res.data.data.records)
+            this.bookList=res.data.data.records
+            this.category=''
+            this.name=''
+            this.description=''
+            this.location=''
+            this.organization=''
+          }
+        })
+      },
+			addBook() {
+				this.addBookDialogVisible = true
+			},
+			cancle() {
+				this.$message.info("取消操作")
+				this.addBookDialogVisible = false
+			},
+			confirmAddBook() {
+				console.log(this.addForm)
+				axios.post(baseURL + "/book", this.addForm).then(res => {
+					if (res.data.code == 200) {
+						this.addBookDialogVisible = false
+						this.$message.success("添加成功")
+					} else {
+						this.$message.error(res.data.msg)
+					}
+				}).finally(() => {
+					this.getAll()
+				})
+			},
+			deleteBook(book) {
+				this.$confirm('此操作将永久删除该该图书, 是否继续?', '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
+					axios.delete(baseURL + "/book/" + book.id).then(res => {
+						if (res.data.code == 200) {
+							this.$message.success("删除成功")
+							this.getAll()
+						} else {
+							this.$message.error(res.data.msg)
+						}
+					})
+				}).catch(() => {
+					this.$message.info("取消操作")
+				});
+			}
+		}
+	})
+</script>
+
+</html>

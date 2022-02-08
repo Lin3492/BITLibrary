@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -131,4 +131,135 @@
     </script>
 
 </body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>图书管理系统</title>
+</head>
+
+<body>
+	<div id="app">
+		<!-- 顶部按钮区 -->
+		
+
+        <el-container>
+            <el-aside>
+                <el-menu>
+                    <el-menu-item><el-link herf="#">图书列表</el-link></el-menu-item>
+                    <el-menu-item><el-link herf="#">图书分类管理</el-link></el-menu-item>
+                    <el-menu-item><el-link herf="#">组织管理</el-link></el-menu-item>
+                </el-menu>
+            </el-aside>
+            <el-main>
+                <el-row>
+                    <el-button type="primary" @click="getAll">获取图书列表</el-button>
+                    <el-button type="primary" @click="addBook">添加图书</el-button>
+                </el-row>
+                <el-table :data="bookList">
+                    <el-table-column type="index" label="序号"></el-table-column>
+                    <el-table-column prop="category" label="图书类别"></el-table-column>
+                    <el-table-column prop="name" label="图书名称"></el-table-column>
+                    <el-table-column label="操作">
+                        <template slot-scope="scope">
+                        <el-button type="danger" size="mini" @click="deleteBook(scope.row)">删除</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </el-main>
+        </el-container>
+
+		<!-- 添加图书弹窗 -->
+		<el-dialog title="添加图书" :visible.sync="addBookDialogVisible" width="50%">
+			<el-form :model="addForm" label-width="100px">
+				<el-form-item label="分类ID">
+					<el-input type="text" v-model="addForm.categoryId"></el-input>
+				</el-form-item>
+				<el-form-item label="名称">
+					<el-input type="text" v-model="addForm.name"></el-input>
+				</el-form-item>
+			</el-form>
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="cancle()">取 消</el-button>
+				<el-button type="primary" @click="confirmAddBook()">确 定</el-button>
+			</span>
+		</el-dialog>
+
+	</div>
+</body>
+<!-- 开发环境版本，包含了有帮助的命令行警告 -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<!-- 引入样式 -->
+<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<!-- axios -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+	var baseURL = "https://053768c9-eeee-4908-8ade-439d76cac3e6.mock.pstmn.io";
+	new Vue({
+		el: '#app',
+		data: {
+			bookList: [],
+			addBookDialogVisible: false,
+			addForm: {}
+		},
+		created() {
+			this.getAll()
+		},
+		methods: {
+			getAll() {
+				axios.get(baseURL + "/book").then(res => {
+					if (res.data.code == 200) {
+						console.log(res.data)
+						this.bookList = res.data.data
+					}
+				})
+			},
+			addBook() {
+				this.addBookDialogVisible = true
+			},
+			cancle() {
+				this.$message.info("取消操作")
+				this.addBookDialogVisible = false
+			},
+			confirmAddBook() {
+				console.log(this.addForm)
+				axios.post(baseURL + "/book", this.addForm).then(res => {
+					if (res.data.code == 200) {
+						this.addBookDialogVisible = false
+						this.$message.success("添加成功")
+					} else {
+						this.$message.error(res.data.msg)
+					}
+				}).finally(() => {
+					this.getAll()
+				})
+			},
+			deleteBook(book) {
+				this.$confirm('此操作将永久删除该该图书, 是否继续?', '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
+					axios.delete(baseURL + "/book/" + book.id).then(res => {
+						if (res.data.code == 200) {
+							this.$message.success("删除成功")
+							this.getAll()
+						} else {
+							this.$message.error(res.data.msg)
+						}
+					})
+				}).catch(() => {
+					this.$message.info("取消操作")
+				});
+			}
+		}
+	})
+</script>
+
 </html>
